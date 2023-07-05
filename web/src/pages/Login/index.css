@@ -1,0 +1,78 @@
+.session {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #0b111f;
+  flex-direction: column;
+  color: white;
+  width: 100%;
+  height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.session__form {
+  width: 100cap;
+  height: 100cap;
+  padding: 3.5rem;
+  background-color: #0b111f;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(139, 138, 138);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+.form__register {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: top;
+  padding-right: 1.5rem;
+  border-right: 1px solid rgb(139, 138, 138);
+}
+
+.form__login {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: top;
+  padding-left: 1.5rem;
+}
+
+.register__fields {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: top;
+  font-size: 1rem;
+}
+
+.login__fields {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: top;
+  font-size: 1rem;
+}
+
+.input {
+  width: 100cap;
+  color: white;
+  padding-top: 0.45rem;
+  padding-bottom: 0.45rem;
+  padding-right: 0.5rem;
+  padding-left: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(139, 138, 138);
+  background-color: inherit;
+  margin-bottom: 0.25rem;
+}
+
+.button {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 0 solid;
+  width: 6.5rem;
+  margin-top: 1rem;
+  font-size: 1rem;
+}
