@@ -29,6 +29,7 @@ export const Login = () => {
         headers: {
           "X-CSRFToken": Cookies.get("csrftoken"),
         },
+        withCredentials: true,
       });
     },
     onSuccess: () => {
@@ -55,6 +56,7 @@ export const Login = () => {
             headers: {
               "X-CSRFToken": Cookies.get("csrftoken"),
             },
+            withCredentials: true,
           }
         );
       }
@@ -66,7 +68,6 @@ export const Login = () => {
 
   return (
     <main className="session">
-      <CSRFToken />
       <h1>Login or Register</h1>
       <div className="session__form">
         <form
@@ -76,6 +77,7 @@ export const Login = () => {
           }}
           className="form__register"
         >
+          <CSRFToken />
           <h2>Register</h2>
 
           <div className="register__fields">
@@ -86,7 +88,7 @@ export const Login = () => {
               }
               value={register.username}
               type="text"
-              className="input"
+              className="input__field"
             />
 
             <label>Password:</label>
@@ -96,7 +98,7 @@ export const Login = () => {
               }
               value={register.password}
               type="password"
-              className="input"
+              className="input__field"
             />
 
             <label>Confirm Password:</label>
@@ -106,7 +108,7 @@ export const Login = () => {
               }
               value={register.repassword}
               type="password"
-              className="input"
+              className="input__field"
             />
 
             <button className="button">Register</button>
@@ -120,6 +122,7 @@ export const Login = () => {
           }}
           className="form__login"
         >
+          <CSRFToken />
           <h2>Login</h2>
 
           <div className="login__fields">
@@ -128,7 +131,7 @@ export const Login = () => {
               onChange={(e) => setLogin({ ...login, username: e.target.value })}
               value={login.username}
               type="text"
-              className="input"
+              className="input__field"
             />
 
             <label>Password:</label>
@@ -136,7 +139,7 @@ export const Login = () => {
               onChange={(e) => setLogin({ ...login, password: e.target.value })}
               value={login.password}
               type="password"
-              className="input"
+              className="input__field"
             />
 
             <button className="button">Login</button>

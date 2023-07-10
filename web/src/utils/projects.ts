@@ -1,0 +1,58 @@
+export const PROJECT_EXAMPLES = [
+  {
+    name: "Project 1",
+    description: "Create a easy way to manage projects",
+    tasks: 16,
+    bugs: 6,
+    developers: 5,
+  },
+  {
+    name: "Project API",
+    description: "Create a easy way to manage projects",
+    tasks: 164,
+    bugs: 62,
+    developers: 20,
+  },
+  {
+    name: "Project CRUD",
+    description: "Create a easy way to manage projects",
+    tasks: 6,
+    bugs: 1,
+    developers: 1,
+  },
+  {
+    name: "Project 4",
+    description: "Create a easy way to manage projects",
+    tasks: 216,
+    bugs: 13,
+    developers: 5,
+  },
+  {
+    name: "Project Syndkos",
+    description: "Create a easy way to manage projects",
+    tasks: 146,
+    bugs: 4,
+    developers: 15,
+  },
+  {
+    name: "Project LGPD",
+    description: "Create a easy way to manage projects",
+    tasks: 526,
+    bugs: 75,
+    developers: 5,
+  },
+  {
+    name: "Project Visual",
+    description: "Create a easy way to manage projects",
+    tasks: 677,
+    bugs: 91,
+    developers: 25,
+  },
+  {
+    name: "Project ONU",
+    description: "Create a easy way to manage projects",
+    tasks: 985,
+    bugs: 61,
+    developers: 95,
+  },
+];

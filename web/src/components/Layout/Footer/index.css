@@ -1,6 +1,5 @@
 main .footer {
   display: flex;
-  background-color: #000000;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -8,7 +7,7 @@ main .footer {
   height: 6rem;
   color: white;
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: #0b111f;
+  background-color: #010409;
 }
 
 .footer__credentials {

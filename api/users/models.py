@@ -12,12 +12,14 @@ class Developer(models.Model):
 class Project(models.Model):
     name = models.CharField(max_length=20)
     description = models.CharField(max_length=200)
+    creator_id = models.IntegerField()
     developers = models.ManyToManyField(Developer)
 
 class Task(models.Model):
     title = models.CharField(max_length=20)
     description = models.CharField(max_length=200)
     complete = models.BooleanField(default=False)
+    creator_id = models.IntegerField()
     developers = models.ManyToManyField(Developer)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
 

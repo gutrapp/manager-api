@@ -1,0 +1,79 @@
+main .home {
+    display: flex;
+    background-color: #010409;
+    flex-direction: column;
+    color: white;
+    width: 100cap;
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+.edit {
+ font-size: 3.5rem;
+}
+
+.logout {
+  display: flex;
+  flex-direction: column;
+  width: 50rem;
+  font-size: 1.5rem;
+}
+
+.edit__p {
+  font-size: 1.5rem;
+  width: 40rem;
+  color: rgb(139, 138, 138);
+  margin-bottom: 5rem;
+}
+
+.user-form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: 5rem;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: top;
+  font-size: 1.5rem;
+}
+
+.input {
+  width: 70ch;
+  color: white;
+  font-size: 1.5rem;
+  padding-top: 0.45rem;
+  padding-bottom: 0.45rem;
+  padding-right: 0.5rem;
+  padding-left: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(139, 138, 138);
+  background-color: inherit;
+  margin-bottom: 1.5rem;
+}
+
+.button {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 0 solid;
+  width: 8.5rem;
+  margin-top: 1rem;
+  font-size: 1rem;
+}
+
+.button__logout {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 0 solid;
+  width: 5.5rem;
+  margin-top: 1rem;
+  font-size: 1rem;
+}
+
+.button__logout:hover {
+  background-color: #cb3e3e;
+  transition-duration: 300ms;
+}

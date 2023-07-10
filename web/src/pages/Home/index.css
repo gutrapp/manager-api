@@ -1,9 +1,9 @@
 main .home {
   display: flex;
-  background-color: #0b111f;
+  background-color: #010409;
   flex-direction: column;
   color: white;
-  width: 100%;
+  width: 100cap;
   height: 100%;
   padding-left: 2rem;
   padding-right: 2rem;
@@ -11,7 +11,7 @@ main .home {
 }
 
 .home__title {
-  font-size: 2.75rem;
+  font-size: 3.75rem;
   width: 40rem;
   font-weight: bolder;
   margin-bottom: 1rem;
@@ -19,7 +19,7 @@ main .home {
 }
 
 .home__text {
-  font-size: 1.25rem;
+  font-size: 2rem;
   width: 40rem;
   color: rgb(139, 138, 138);
 }
@@ -28,7 +28,51 @@ main .home {
   padding: 0.5rem;
   border-radius: 0.5rem;
   border: 0 solid;
-  width: 6.5rem;
+  width: 8.75rem;
   margin-top: 2rem;
-  font-size: 1rem;
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.dashboard {
+  font-size: 2rem;
+}
+
+.dashboard-example {
+  width: 100cap;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(139, 138, 138);
+  padding: 1.5rem;
+}
+
+.project {
+  display: flex;
+  flex-direction: row;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(139, 138, 138);
+  padding-top: 2px;
+  padding-bottom: 2px;
+  justify-content: space-around;
+  width: 100cap;
+  margin-bottom: 20px;
+}
+
+.project__text {
+  margin: 0.5rem;
+  font-size: 1.5rem;
+}
+
+.dashboard-icon {
+  border-radius: 100%;
+  border: 1px solid rgb(139, 138, 138);
+  padding: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.dashboard-icons {
+  display: flex;
+  flex-direction: row;
 }

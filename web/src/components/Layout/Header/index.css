@@ -1,6 +1,7 @@
+
 main .header {
   display: flex;
-  background-color: #0b111f;
+  background-color: #010409;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
@@ -8,13 +9,40 @@ main .header {
   height: 3.75rem;
   color: #ffffff;
   padding-left: 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   padding-right: 2rem;
   border-bottom: 1px solid rgb(139, 138, 138);
 }
 
+.header__start {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  column-gap: 2rem;
+}
+
+.header__item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  color: rgb(139, 138, 138);
+}
+
+.header__item:hover {
+  color: white;
+  transition-duration: 300ms; 
+  cursor: pointer;
+}
+
+a, a:hover, a:focus, a:active {
+  text-decoration: none;
+  color: inherit;
+}
+
 .logo {
   font-weight: 700;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .header__corner {
@@ -26,32 +54,20 @@ main .header {
   column-gap: 0.5rem;
 }
 
-.search {
-  display: flex;
-  flex-direction: row;
-  color: black;
-  padding-left: 0.25rem;
-  padding-right: 0.25rem;
-  background-color: #0b111f;
-}
-
-.search__input {
-  width: 100cap;
-  color: white;
-  padding-top: 0.45rem;
-  padding-bottom: 0.45rem;
-  padding-right: 0.5rem;
-  padding-left: 0.5rem;
-  border-radius: 0.5rem;
-  border: 1px solid rgb(139, 138, 138);
-  background-color: inherit;
-}
-
 .login {
   padding-top: 0.4rem;
   padding-bottom: 0.4rem;
   border-radius: 0.5rem;
   border: 0 solid;
   width: 4rem;
+  font-size: 1rem;
+}
+
+.logout {
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+  border-radius: 0.5rem;
+  border: 0 solid;
+  width: 5rem;
   font-size: 1rem;
 }

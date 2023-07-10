@@ -1,0 +1,203 @@
+.page {
+  display: flex;
+  background-color: #010409;
+  flex-direction: column;
+  color: white;
+  width: 100cap;
+  height: 100%;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.dashboard-div {
+  padding: 2rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(139, 138, 138);
+  margin-bottom: 5rem;
+}
+
+.title__p {
+  font-size: 1.25rem;
+  width: 40rem;
+  color: rgb(139, 138, 138);
+  margin-bottom: 5rem;
+}
+
+.title {
+  font-size: 3rem;
+}
+
+.dashboard {
+  font-size: 2rem;
+  margin-top: 0.5rem;
+}
+
+.dashboard-example {
+  width: 100cap;
+  overflow-y: auto; 
+  min-height: 500px;
+  max-height: 500px;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(139, 138, 138);
+  padding: 1.5rem;
+}
+
+.project {
+  display: flex;
+  flex-direction: row;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(139, 138, 138);
+  padding-top: 2px;
+  padding-bottom: 2px;
+  justify-content: space-between;
+  width: 100cap;
+  margin-bottom: 20px;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  align-items: center;
+}
+
+.project__text {
+  margin: 0.5rem;
+  font-size: 1.5rem;
+}
+
+.dashboard-icon {
+  border-radius: 100%;
+  border: 1px solid rgb(139, 138, 138);
+  padding: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.dashboard-icons {
+  display: flex;
+  flex-direction: row;
+  column-gap: 0.5rem;
+}
+
+.dashboard-icon:hover {
+  cursor: pointer;
+}
+
+.bug {
+  display: flex;
+  flex-direction: row;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(139, 138, 138);
+  padding-top: 2px;
+  padding-bottom: 2px;
+  justify-content: space-between;
+  width: 100cap;
+  margin-bottom: 20px;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  align-items: center;
+}
+
+.bug-first {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.bug__text {
+  margin: 0.5rem;
+  font-size: 1.5rem;
+}
+
+.task {
+  display: flex;
+  flex-direction: row;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(139, 138, 138);
+  padding-top: 2px;
+  padding-bottom: 2px;
+  justify-content: space-between;
+  width: 100cap;
+  margin-bottom: 20px;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  align-items: center;
+}
+
+.task-first {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.task__text {
+  margin: 0.5rem;
+  font-size: 1.5rem;
+}
+
+.button__icon {
+  background-color: transparent;
+  color: white;
+  border: none;
+  margin: 0;
+  padding: 0;
+  text-align: inherit;
+  font: inherit;
+  border-radius: 0;
+  appearance: none;
+  cursor: pointer;
+}
+
+.button__delete:hover {
+  color: red;
+}
+
+.modal-component {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  border-radius: 0.5rem;
+  border: 1px solid rgb(139, 138, 138);
+  padding: 1.5rem;
+  background-color: #010409;
+  width: 500px;
+  height: 100cap
+}
+
+.button {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 0 solid;
+  width: 6.5rem;
+  margin-top: 1rem;
+  font-size: 1rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1.25rem;
+}
+
+.input-modal {
+  font-size: 1rem;
+  width: 100cap;
+  color: white;
+  padding-top: 0.45rem;
+  padding-bottom: 0.45rem;
+  padding-right: 0.5rem;
+  padding-left: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(139, 138, 138);
+  background-color: inherit;
+  margin-bottom: 0.5rem;
+}
