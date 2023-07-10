@@ -5,7 +5,7 @@ import { RegisterData } from "../../types/register";
 import { LoginData } from "../../types/login";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import CSRFToken from "../../components/CSRFToken";
+import { CSRFToken } from "../../components/CSRFToken";
 import { useNavigate } from "react-router-dom";
 
 export const Login = () => {
@@ -68,6 +68,7 @@ export const Login = () => {
 
   return (
     <main className="session">
+      <CSRFToken />
       <h1>Login or Register</h1>
       <div className="session__form">
         <form
@@ -77,7 +78,6 @@ export const Login = () => {
           }}
           className="form__register"
         >
-          <CSRFToken />
           <h2>Register</h2>
 
           <div className="register__fields">
@@ -122,7 +122,6 @@ export const Login = () => {
           }}
           className="form__login"
         >
-          <CSRFToken />
           <h2>Login</h2>
 
           <div className="login__fields">

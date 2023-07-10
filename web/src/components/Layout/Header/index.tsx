@@ -11,8 +11,8 @@ export const Header = () => {
 
   const CheckAuth = useQuery({
     queryKey: ["auth"],
-    queryFn: async () => {
-      axios
+    queryFn: async () =>
+      await axios
         .get("http://127.0.0.1:8000/api/auth/authenticated", {
           headers: {
             "X-CSRFToken": Cookies.get("csrftoken"),
@@ -21,8 +21,7 @@ export const Header = () => {
         })
         .then((response) => {
           setAuthenticated(response.data.auth);
-        });
-    },
+        }),
   });
 
   return (

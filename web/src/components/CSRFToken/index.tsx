@@ -1,24 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { useQuery } from "@tanstack/react-query";
 
-const CSRFToken = () => {
+export const CSRFToken = () => {
   const [CSRFToken, setCSRFToken] = useState<string>("");
 
-  const { data } = useQuery({
-    queryKey: ["csrftoken"],
-    queryFn: async () => {
-      await axios.get("http://127.0.0.1:8000/api/auth/csrf", {
-        withCredentials: true,
-      });
-
-      setCSRFToken(Cookies.get("csrftoken") as string);
-      return Cookies.get("csrftoken");
-    },
-  });
-
-  console.log(data);
+  useEffect(() => {
+    async function getToken() {
+      await axios
+        .get("http://127.0.0.1:8000/api/auth/csrf", {
+          withCredentials: true,
+        })
+        .then(() => {
+          setCSRFToken(Cookies.get("csrftoken") as string);
+        });
+    }
+    getToken();
+  }, []);
 
   return (
     <input
@@ -29,5 +27,3 @@ const CSRFToken = () => {
     />
   );
 };
-
-export default CSRFToken;

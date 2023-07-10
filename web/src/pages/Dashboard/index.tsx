@@ -7,28 +7,47 @@ import {
 } from "react-icons/ai";
 import { BsCircle } from "react-icons/bs";
 import { BiAddToQueue } from "react-icons/bi";
-import { HiOutlineFilter } from "react-icons/hi";
+import { HiOutlineFilter, HiOutlinePencil } from "react-icons/hi";
 import { Layout } from "../../components/Layout";
 import { useState } from "react";
 import "./index.css";
-import { Project, ProjectData } from "../../types/project";
+import { Project } from "../../types/project";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import { Bug, BugData } from "../../types/bug";
-import { Task, TaskData } from "../../types/task";
+import { Bug } from "../../types/bug";
+import { Task } from "../../types/task";
+import { Filter } from "../../types/filter";
+import {
+  CreateBugModal,
+  CreateProjectModal,
+  CreateTaskModal,
+  UpdateBugModal,
+  UpdateProjectModal,
+  UpdateTaskModal,
+} from "../../components/Modals";
 
 export const Dashboard = () => {
   const router = useNavigate();
 
   const [userId, setUserId] = useState<number>(0);
 
-  const [description, setDescription] = useState<string>("");
+  const [objectId, setObjectId] = useState<number>(0);
 
-  const [name, setName] = useState<string>("");
+  const [filterData, setFilterData] = useState<Filter>({
+    complete: false,
+    description: "",
+    name: "",
+    solved: false,
+    title: "",
+  });
 
-  const [title, setTitle] = useState<string>("");
+  const [updateProjectModal, setUpdateProjectModal] = useState<boolean>(false);
+
+  const [updateTaskModal, setUpdateTaskModal] = useState<boolean>(false);
+
+  const [updateBugModal, setUpdateBugModal] = useState<boolean>(false);
 
   const [projectAddModal, setProjectAddModal] = useState<boolean>(false);
 
@@ -50,7 +69,7 @@ export const Dashboard = () => {
 
   const CheckAuth = useQuery({
     queryKey: ["auth"],
-    queryFn: async () => {
+    queryFn: async () =>
       await axios
         .get("http://127.0.0.1:8000/api/auth/authenticated", {
           headers: {
@@ -63,77 +82,94 @@ export const Dashboard = () => {
             router("/login");
           }
           setUserId(response.data.id);
-
-          return response.data;
-        });
-    },
+        }),
   });
 
-  const GetUserProjects = useQuery({
+  const GetUserInfo = useQuery({
     queryKey: ["projects"],
-    queryFn: async () => {
+    queryFn: async () =>
       await axios
-        .get("http://127.0.0.1:8000/api/developer/projects", {
+        .get("http://127.0.0.1:8000/api/developer/info", {
           withCredentials: true,
           headers: {
             "X-CSRFToken": Cookies.get("csrftoken"),
           },
         })
         .then((response) => {
-          setProjects(response.data);
-
-          return response.data;
-        });
-    },
+          setProjects(response.data.projects);
+          setBugs(response.data.bugs);
+          setTasks(response.data.tasks);
+        }),
   });
 
-  const GetUserBugs = useQuery({
-    queryKey: ["bugs"],
-    queryFn: async () => {
-      await axios
-        .get("http://127.0.0.1:8000/api/developer/bugs", {
-          withCredentials: true,
-          headers: {
-            "X-CSRFToken": Cookies.get("csrftoken"),
-          },
-        })
-        .then((response) => {
-          setBugs(response.data);
+  const FilterProjects = async () => {
+    const name = filterData.name ? filterData.name : "%(PASS)%";
+    const description = filterData.description
+      ? filterData.description
+      : "%(PASS)%";
 
-          return response.data;
+    await axios
+      .get(
+        `http://127.0.0.1:8000/api/developer/filter/tasks/${name}/${description}`
+      )
+      .then((response) => {
+        setProjects(response.data);
+      });
+  };
+
+  const FilterBugs = async () => {
+    const title = filterData.title ? filterData.title : "%(PASS)%";
+    const description = filterData.description
+      ? filterData.description
+      : "%(PASS)%";
+
+    await axios
+      .get(
+        `http://127.0.0.1:8000/api/developer/filter/tasks/${title}/${description}`
+      )
+      .then((response) => {
+        const bugs: Bug[] = response.data;
+        let filteredBugs: Bug[] = [];
+
+        bugs.map((bug, _) => {
+          if (bug.solved === filterData.solved) filteredBugs.push(bug);
         });
-    },
-  });
 
-  const GetUserTasks = useQuery({
-    queryKey: ["tasks"],
-    queryFn: async () => {
-      await axios
-        .get("http://127.0.0.1:8000/api/developer/tasks", {
-          withCredentials: true,
-          headers: {
-            "X-CSRFToken": Cookies.get("csrftoken"),
-          },
-        })
-        .then((response) => {
-          setTasks(response.data);
+        setBugs(filteredBugs);
+      });
+  };
 
-          return response.data;
+  const FilterTasks = async () => {
+    const title = filterData.title ? filterData.title : "%(PASS)%";
+    const description = filterData.description
+      ? filterData.description
+      : "%(PASS)%";
+
+    await axios
+      .get(
+        `http://127.0.0.1:8000/api/developer/filter/tasks/${title}/${description}`
+      )
+      .then((response) => {
+        const tasks: Task[] = response.data;
+        let filteredTasks: Task[] = [];
+
+        tasks.map((task, _) => {
+          if (task.complete === filterData.complete) filteredTasks.push(task);
         });
-    },
-  });
+
+        setTasks(filteredTasks);
+      });
+  };
 
   const DeleteProject = useMutation({
     mutationKey: ["delete-project"],
-    mutationFn: async (id: number) => {
+    mutationFn: async (id: number) =>
       await axios.delete(`http://127.0.0.1:8000/api/project/${id}`, {
         withCredentials: true,
         headers: {
           "X-CSRFToken": Cookies.get("csrftoken"),
         },
-      });
-      return true;
-    },
+      }),
     onSuccess: () => {
       window.location.reload();
     },
@@ -141,16 +177,13 @@ export const Dashboard = () => {
 
   const DeleteTask = useMutation({
     mutationKey: ["delete-task"],
-    mutationFn: async (id: number) => {
+    mutationFn: async (id: number) =>
       await axios.delete(`http://127.0.0.1:8000/api/task/${id}`, {
         withCredentials: true,
         headers: {
           "X-CSRFToken": Cookies.get("csrftoken"),
         },
-      });
-
-      return true;
-    },
+      }),
     onSuccess: () => {
       window.location.reload();
     },
@@ -158,15 +191,13 @@ export const Dashboard = () => {
 
   const DeleteBug = useMutation({
     mutationKey: ["delete-bug"],
-    mutationFn: async (id: number) => {
+    mutationFn: async (id: number) =>
       await axios.delete(`http://127.0.0.1:8000/api/bug/${id}`, {
         withCredentials: true,
         headers: {
           "X-CSRFToken": Cookies.get("csrftoken"),
         },
-      });
-      return true;
-    },
+      }),
     onSuccess: () => {
       window.location.reload();
     },
@@ -174,17 +205,13 @@ export const Dashboard = () => {
 
   const UpdateTask = useMutation({
     mutationKey: ["update-task"],
-    mutationFn: async (id: number) => {
-      const data = {
-        title: tasks[id].title,
-        description: tasks[id].description,
-        complete: tasks[id].complete,
-      };
-
+    mutationFn: async (id: number) =>
       await axios.put(
         `http://127.0.0.1:8000/api/task/${id}`,
         {
-          data,
+          title: tasks[id].title,
+          description: tasks[id].description,
+          complete: tasks[id].complete,
         },
         {
           withCredentials: true,
@@ -192,24 +219,18 @@ export const Dashboard = () => {
             "X-CSRFToken": Cookies.get("csrftoken"),
           },
         }
-      );
-      return true;
-    },
+      ),
   });
 
   const UpdateBug = useMutation({
     mutationKey: ["update-bug"],
-    mutationFn: async (id: number) => {
-      const data = {
-        description: bugs[id].description,
-        solved: bugs[id].solved,
-        title: bugs[id].title,
-      };
-
+    mutationFn: async (id: number) =>
       await axios.put(
         `http://127.0.0.1:8000/api/bug/${id}`,
         {
-          data,
+          description: bugs[id].description,
+          solved: bugs[id].solved,
+          title: bugs[id].title,
         },
         {
           withCredentials: true,
@@ -217,9 +238,7 @@ export const Dashboard = () => {
             "X-CSRFToken": Cookies.get("csrftoken"),
           },
         }
-      );
-      return true;
-    },
+      ),
   });
 
   return (
@@ -265,6 +284,16 @@ export const Dashboard = () => {
                     <label className="project__text">
                       {project.developers.length} Developers
                     </label>
+                    <button
+                      className="button__icon"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setObjectId(project.id);
+                        setUpdateProjectModal(!updateProjectModal);
+                      }}
+                    >
+                      <HiOutlinePencil size={30} />
+                    </button>
                     <button
                       className="button__icon"
                       onClick={(e) => {
@@ -316,9 +345,9 @@ export const Dashboard = () => {
                           className="button__icon"
                           onClick={(e) => {
                             e.preventDefault();
-                            UpdateTask.mutate(task.id);
                             let arr = [...tasks];
                             arr[i].complete = !arr[i].complete;
+                            UpdateTask.mutate(task.id);
                             setTasks(arr);
                           }}
                         >
@@ -330,9 +359,9 @@ export const Dashboard = () => {
                           className="button__icon"
                           onClick={(e) => {
                             e.preventDefault();
-                            UpdateTask.mutate(task.id);
                             let arr = [...tasks];
                             arr[i].complete = !arr[i].complete;
+                            UpdateTask.mutate(task.id);
                             setTasks(arr);
                           }}
                         >
@@ -342,6 +371,16 @@ export const Dashboard = () => {
                       <label className="task__text">Task: {task.id}</label>
                     </div>
                     <label className="task__text">{task.title}</label>
+                    <button
+                      className="button__icon"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setObjectId(task.id);
+                        setUpdateTaskModal(!updateTaskModal);
+                      }}
+                    >
+                      <HiOutlinePencil size={30} />
+                    </button>
                     <button
                       className="button__icon"
                       onClick={(e) => {
@@ -393,9 +432,9 @@ export const Dashboard = () => {
                           className="button__icon"
                           onClick={(e) => {
                             e.preventDefault();
-                            UpdateBug.mutate(bug.id);
                             let arr = [...bugs];
                             arr[i].solved = !arr[i].solved;
+                            UpdateBug.mutate(bug.id);
                             setBugs(arr);
                           }}
                         >
@@ -407,9 +446,9 @@ export const Dashboard = () => {
                           className="button__icon"
                           onClick={(e) => {
                             e.preventDefault();
-                            UpdateBug.mutate(bug.id);
                             let arr = [...bugs];
                             arr[i].solved = !arr[i].solved;
+                            UpdateBug.mutate(bug.id);
                             setBugs(arr);
                           }}
                         >
@@ -419,6 +458,16 @@ export const Dashboard = () => {
                       <label className="bug__text">Issue: {bug.id}</label>
                     </div>
                     <label className="bug__text">{bug.title}</label>
+                    <button
+                      className="button__icon"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setObjectId(bug.id);
+                        setUpdateBugModal(!updateBugModal);
+                      }}
+                    >
+                      <HiOutlinePencil size={30} />
+                    </button>
                     <button
                       className="button__icon"
                       onClick={(e) => {
@@ -450,6 +499,25 @@ export const Dashboard = () => {
           id={userId}
         />
 
+        <UpdateBugModal
+          display={bugAddModal}
+          onClose={() => setUpdateBugModal(!updateBugModal)}
+          specific_id={objectId}
+          id={userId}
+        />
+        <UpdateProjectModal
+          display={projectAddModal}
+          onClose={() => setUpdateProjectModal(!updateProjectModal)}
+          specific_id={objectId}
+          id={userId}
+        />
+        <UpdateTaskModal
+          display={taskAddModal}
+          onClose={() => setUpdateTaskModal(!updateTaskModal)}
+          specific_id={objectId}
+          id={userId}
+        />
+
         {bugFilterModal ? (
           <main className="modal-component">
             <div className="modal">
@@ -457,8 +525,70 @@ export const Dashboard = () => {
                 className="button__icon"
                 onClick={() => setBugFilterModal(!bugFilterModal)}
               >
-                <AiOutlineCloseCircle size={25} />
+                <AiOutlineCloseCircle size={20} />
               </button>
+              <form className="filter">
+                <div className="filter__status">
+                  {filterData.solved && (
+                    <div
+                      className="filter__solved"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setFilterData({
+                          ...filterData,
+                          solved: !filterData.solved,
+                        });
+                      }}
+                    >
+                      <AiOutlineCheckCircle size={25} />
+                      <button className="button__icon">Solved</button>
+                    </div>
+                  )}
+                  {!filterData.solved && (
+                    <div
+                      className="filter__solved"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setFilterData({
+                          ...filterData,
+                          solved: !filterData.solved,
+                        });
+                      }}
+                    >
+                      <BsCircle size={20} />
+                      <button className="button__icon">Unsolved</button>
+                    </div>
+                  )}
+                </div>
+
+                <label className="label">Title:</label>
+                <input
+                  className="input-modal"
+                  type="text"
+                  value={filterData.title}
+                  onChange={(e) =>
+                    setFilterData({
+                      ...filterData,
+                      title: e.target.value,
+                    })
+                  }
+                />
+
+                <label className="label">Description:</label>
+                <input
+                  className="input-modal"
+                  type="text"
+                  value={filterData.description}
+                  onChange={(e) =>
+                    setFilterData({
+                      ...filterData,
+                      description: e.target.value,
+                    })
+                  }
+                />
+
+                <button className="button-filter">Filter</button>
+              </form>
             </div>
           </main>
         ) : (
@@ -472,8 +602,70 @@ export const Dashboard = () => {
                 className="button__icon"
                 onClick={() => setTaskFilterModal(!taskFilterModal)}
               >
-                <AiOutlineCloseCircle size={25} />
+                <AiOutlineCloseCircle size={20} />
               </button>
+              <form className="filter">
+                <div className="filter__status">
+                  {filterData.complete && (
+                    <div
+                      className="filter__solved"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setFilterData({
+                          ...filterData,
+                          complete: !filterData.complete,
+                        });
+                      }}
+                    >
+                      <AiOutlineCheckCircle size={25} />
+                      <button className="button__icon">Complete</button>
+                    </div>
+                  )}
+                  {!filterData.complete && (
+                    <div
+                      className="filter__solved"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setFilterData({
+                          ...filterData,
+                          complete: !filterData.complete,
+                        });
+                      }}
+                    >
+                      <BsCircle size={20} />
+                      <button className="button__icon">Incomplete</button>
+                    </div>
+                  )}
+                </div>
+
+                <label className="label">Title:</label>
+                <input
+                  className="input-modal"
+                  type="text"
+                  value={filterData.title}
+                  onChange={(e) =>
+                    setFilterData({
+                      ...filterData,
+                      title: e.target.value,
+                    })
+                  }
+                />
+
+                <label className="label">Description:</label>
+                <input
+                  className="input-modal"
+                  type="text"
+                  value={filterData.description}
+                  onChange={(e) =>
+                    setFilterData({
+                      ...filterData,
+                      description: e.target.value,
+                    })
+                  }
+                />
+
+                <button className="button-filter">Filter</button>
+              </form>
             </div>
           </main>
         ) : (
@@ -487,8 +679,37 @@ export const Dashboard = () => {
                 className="button__icon"
                 onClick={() => setProjectFilterModal(!projectFilterModal)}
               >
-                <AiOutlineCloseCircle size={25} />
+                <AiOutlineCloseCircle size={20} />
               </button>
+              <form className="filter">
+                <label className="label">Name:</label>
+                <input
+                  className="input-modal"
+                  type="text"
+                  value={filterData.name}
+                  onChange={(e) =>
+                    setFilterData({
+                      ...filterData,
+                      name: e.target.value,
+                    })
+                  }
+                />
+
+                <label className="label">Description:</label>
+                <input
+                  className="input-modal"
+                  type="text"
+                  value={filterData.description}
+                  onChange={(e) =>
+                    setFilterData({
+                      ...filterData,
+                      description: e.target.value,
+                    })
+                  }
+                />
+
+                <button className="button-filter">Filter</button>
+              </form>
             </div>
           </main>
         ) : (
@@ -496,213 +717,5 @@ export const Dashboard = () => {
         )}
       </div>
     </Layout>
-  );
-};
-
-interface ModalInput {
-  display: boolean;
-  onClose: () => void;
-  id: number;
-}
-
-const CreateProjectModal = ({ display, onClose, id }: ModalInput) => {
-  const [data, setData] = useState<ProjectData>({
-    description: "",
-    developers: [id],
-    name: "",
-    creator_id: id,
-  });
-
-  const CreateProject = useMutation({
-    mutationKey: ["create-project"],
-    mutationFn: async () => {
-      await axios.post("http://127.0.0.1:8000/api/project", data, {
-        withCredentials: true,
-        headers: {
-          "X-CSRFToken": Cookies.get("csrftoken"),
-        },
-      });
-    },
-    onSuccess: () => {
-      window.location.reload();
-    },
-  });
-
-  if (!display) return null;
-
-  return (
-    <main className="modal-component">
-      <div className="modal">
-        <button className="button__icon" onClick={() => onClose()}>
-          <AiOutlineCloseCircle size={25} />
-        </button>
-        <form
-          className="form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            CreateProject.mutate();
-          }}
-        >
-          <label className="label">Name:</label>
-          <input
-            className="input-modal"
-            value={data.name}
-            onChange={(e) => setData({ ...data, name: e.target.value })}
-          />
-
-          <label className="label">Description:</label>
-          <textarea
-            className="input-modal"
-            value={data.description}
-            onChange={(e) => setData({ ...data, description: e.target.value })}
-          />
-
-          <button className="button">Create Project</button>
-        </form>
-      </div>
-    </main>
-  );
-};
-
-const CreateTaskModal = ({ display, onClose, id }: ModalInput) => {
-  const [data, setData] = useState<TaskData>({
-    complete: false,
-    description: "",
-    title: "",
-    developers: [id],
-    project: "",
-    creator_id: id,
-  });
-
-  const CreateTask = useMutation({
-    mutationKey: ["create-task"],
-    mutationFn: async () => {
-      await axios.post("http://127.0.0.1:8000/api/task", data, {
-        withCredentials: true,
-        headers: {
-          "X-CSRFToken": Cookies.get("csrftoken"),
-        },
-      });
-    },
-    onSuccess: () => {
-      window.location.reload();
-    },
-  });
-
-  if (!display) return null;
-
-  return (
-    <main className="modal-component">
-      <div className="modal">
-        <button className="button__icon" onClick={() => onClose()}>
-          <AiOutlineCloseCircle size={25} />
-        </button>
-        <form
-          className="form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            CreateTask.mutate();
-          }}
-        >
-          <label className="label">Title:</label>
-          <input
-            className="input-modal"
-            value={data.title}
-            onChange={(e) => setData({ ...data, title: e.target.value })}
-          />
-
-          <label className="label">Description:</label>
-          <textarea
-            className="input-modal"
-            value={data.description}
-            onChange={(e) => setData({ ...data, description: e.target.value })}
-          />
-
-          <label className="label">Project Id:</label>
-          <input
-            className="input-modal"
-            value={data.project}
-            onChange={(e) => setData({ ...data, project: e.target.value })}
-          />
-
-          <button className="button">Create Task</button>
-        </form>
-      </div>
-    </main>
-  );
-};
-
-const CreateBugModal = ({ display, onClose, id }: ModalInput) => {
-  const [data, setData] = useState<BugData>({
-    solved: false,
-    description: "",
-    title: "",
-    developer: id,
-    project: "",
-    task: "",
-  });
-
-  const CreateBug = useMutation({
-    mutationKey: ["create-bug"],
-    mutationFn: async () => {
-      await axios.post("http://127.0.0.1:8000/api/bug", data, {
-        withCredentials: true,
-        headers: {
-          "X-CSRFToken": Cookies.get("csrftoken"),
-        },
-      });
-    },
-    onSuccess: () => {
-      window.location.reload();
-    },
-  });
-
-  if (!display) return null;
-
-  return (
-    <main className="modal-component">
-      <div className="modal">
-        <button className="button__icon" onClick={() => onClose()}>
-          <AiOutlineCloseCircle size={25} />
-        </button>
-        <form
-          className="form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            CreateBug.mutate();
-          }}
-        >
-          <label className="label">Title:</label>
-          <input
-            className="input-modal"
-            value={data.title}
-            onChange={(e) => setData({ ...data, title: e.target.value })}
-          />
-
-          <label className="label">Description:</label>
-          <textarea
-            className="input-modal"
-            value={data.description}
-            onChange={(e) => setData({ ...data, description: e.target.value })}
-          />
-
-          <label className="label">Project Id:</label>
-          <input
-            className="input-modal"
-            value={data.project}
-            onChange={(e) => setData({ ...data, project: e.target.value })}
-          />
-
-          <label className="label">Task Id:</label>
-          <input
-            className="input-modal"
-            value={data.task}
-            onChange={(e) => setData({ ...data, task: e.target.value })}
-          />
-
-          <button className="button">Create Bug</button>
-        </form>
-      </div>
-    </main>
   );
 };

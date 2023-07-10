@@ -1,11 +1,9 @@
 from django.utils.decorators import method_decorator
-from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from .models import Project, Developer, Bug, Task
 from .serializer import DeveloperSerializer, ProjectSerializer, BugSerializer, TaskSerializer, UserSerializer
 from rest_framework.response import Response
 from rest_framework import status, permissions
-from django.middleware.csrf import get_token
 from django.contrib import auth
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
@@ -102,26 +100,70 @@ class UpdateDeveloper(APIView):
 
         return Response(status=status.HTTP_200_OK)
 
-class GetDeveloperBugs(APIView):
+class GetDeveloperInfo(APIView):
     def get(self, request, format=None):
         user = request.user
         developer = user.developer
-        serializer = BugSerializer(developer.bug_set.all(), many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+
+        serializer_bugs = BugSerializer(developer.bug_set.all(), many=True)
+        serializer_tasks = TaskSerializer(developer.task_set.all(), many=True)
+        serializer_projects = ProjectSerializer(developer.project_set.all(), many=True)
+
+        return Response({
+            "bugs": serializer_bugs.data,
+            "tasks": serializer_tasks.data,
+            "projects": serializer_projects.data
+        }, status=status.HTTP_200_OK)
+
+class GetDeveloperProjectsFilter(APIView):
+    def get(self, request, name, description, format=None):
+        user = request.user
+        developer = user.developer
+
+        projects = developer.project_set.all()
+        if name != "%(PASS)%" and description != "%(PASS)%":
+            serializer = ProjectSerializer(projects.filter(name__icontains=name, description__icontains=description), many=True)
         
-    
-class GetDeveloperTasks(APIView):
-    def get(self, request, format=None):
-        user = request.user
-        developer = user.developer
-        serializer = TaskSerializer(developer.task_set.all(), many=True)
+        elif name != "%(PASS)%":
+            serializer = ProjectSerializer(projects.filter(name__icontains=name), many=True)
+
+        elif description != "%(PASS)%":
+            serializer = ProjectSerializer(projects.filter(description__icontains=description), many=True)
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-class GetDeveloperProjects(APIView):
-    def get(self, request, format=None):
+class GetDeveloperTasksFilter(APIView):
+    def get(self, request, title, description, format=None):
         user = request.user
         developer = user.developer
-        serializer = ProjectSerializer(developer.project_set.all(), many=True)
+
+        tasks = developer.task_set.all()
+        if title != "%(PASS)%" and description != "%(PASS)%":
+            serializer = TaskSerializer(tasks.filter(title__icontains=title, description__icontains=description), many=True)
+        
+        elif title != "%(PASS)%":
+            serializer = TaskSerializer(tasks.filter(title__icontains=title), many=True)
+
+        elif description != "%(PASS)%":
+            serializer = TaskSerializer(tasks.filter(description__icontains=description), many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class GetDeveloperBugsFilter(APIView):
+    def get(self, request, title, description, format=None):
+        user = request.user
+        developer = user.developer
+
+        bugs = developer.bug_set.all()
+        if title != "%(PASS)%" and description != "%(PASS)%":
+            serializer = BugSerializer(bugs.filter(title__icontains=title, description__icontains=description), many=True)
+        
+        elif title != "%(PASS)%":
+            serializer = BugSerializer(bugs.filter(title__icontains=title), many=True)
+
+        elif description != "%(PASS)%":
+            serializer = BugSerializer(bugs.filter(description__icontains=description), many=True)
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class GetSessionDeveloper(APIView):
@@ -132,7 +174,7 @@ class GetSessionDeveloper(APIView):
         return Response({'user': user_serializer.data, 'developer': developer_serializer.data})
 
 # +==============================================================================================================================+
-# |                                                          PROJECT VIEWS                                                       |
+# |                                             PROJECT VIEWS                                                                    |
 # +==============================================================================================================================+
 
 class ProjectDefaultViews(APIView):
@@ -144,6 +186,15 @@ class ProjectDefaultViews(APIView):
         return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 class BasicProjectViews(APIView):
+    def get(self, request, id, format=None):
+        try:
+            project = Project.objects.get(id=id)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = ProjectSerializer(project)
+
+        return Response(serializer.data ,status=status.HTTP_200_OK)
+
     def delete(self, request, id, format=None):
         try:
             project = Project.objects.get(id=id)
@@ -157,21 +208,18 @@ class BasicProjectViews(APIView):
             return Response(status=status.HTTP_200_OK)
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
+    def put(self, request, id, format=None):
+        try:
+            project = Project.objects.get(id=id)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        user = request.user
+        developer = user.developer
 
-class ProjectFilterName(APIView):
-    def get(self, request, name, format=None):
-        serializer = ProjectSerializer(Project.objects.all().filter(name__icontains=name), many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
-class ProjectFilterDescription(APIView):
-    def get(self, request, description, format=None):
-        serializer = ProjectSerializer(Project.objects.all().filter(description__icontains=description), many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-class ProjectFilterNameAndDescription(APIView):
-    def get(self, request, description, name, format=None):
-        serializer = ProjectSerializer(Project.objects.all().filter(description__icontains=description, name__icontains=name), many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        if project.creator_id == developer.id:
+            serializer = ProjectSerializer(instance=project, data=self.request.data)
+            return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 # +==============================================================================================================================+
 # |                                                          TASK VIEWS                                                          |
@@ -186,6 +234,15 @@ class TaskDefaultViews(APIView):
         return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 class BasicTaskViews(APIView):
+    def get(self, request, id, format=None):
+        try:
+            task = Task.objects.get(id=id)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = TaskSerializer(task)
+
+        return Response(serializer.data ,status=status.HTTP_200_OK)
+
     def delete(self, request, id, format=None):
         try:
             task = Task.objects.get(id=id)
@@ -217,21 +274,6 @@ class BasicTaskViews(APIView):
             return Response(status=status.HTTP_200_OK)
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-class TaskFilterTitle(APIView):
-    def get(self, request, title, format=None):
-        serializer = TaskSerializer(Task.objects.all().filter(title__icontains=title), many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
-class TaskFilterDescription(APIView):
-    def get(self, request, description, format=None):
-        serializer = TaskSerializer(Task.objects.all().filter(description__icontains=description), many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-class TaskFilterTitleAndDescription(APIView):
-    def get(self, request, description, title, format=None):
-        serializer = TaskSerializer(Task.objects.all().filter(description__icontains=description, title__icontains=title), many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
 # +==============================================================================================================================+
 # |                                                          BUGS VIEWS                                                          |
 # +==============================================================================================================================+
@@ -245,6 +287,15 @@ class BugDefaultViews(APIView):
         return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 class BasicBugViews(APIView):
+    def get(self, request, id, format=None):
+        try:
+            bug = Bug.objects.get(id=id)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = BugSerializer(bug)
+
+        return Response(serializer.data ,status=status.HTTP_200_OK)
+
     def delete(self, request, id, format=None):
         try:
             bug = Bug.objects.get(id=id)
@@ -276,18 +327,3 @@ class BasicBugViews(APIView):
             serializer.save
             return Response(status=status.HTTP_200_OK)
         return Response(status=status.HTTP_401_UNAUTHORIZED)
-    
-class BugFilterTitle(APIView):
-    def get(self, request, title, format=None):
-        serializer = BugSerializer(Bug.objects.all().filter(title__icontains=title), many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
-class BugFilterDescription(APIView):
-    def get(self, request, description, format=None):
-        serializer = BugSerializer(Bug.objects.all().filter(description__icontains=description), many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-class BugFilterTitleAndDescription(APIView):
-    def get(self, request, description, title, format=None):
-        serializer = BugSerializer(Bug.objects.all().filter(description__icontains=description, title__icontains=title), many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
